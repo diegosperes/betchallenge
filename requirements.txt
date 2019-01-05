@@ -1,2 +1,4 @@
 sanic==0.8.3
 PyYAML==3.13
+motor==2.0.0
+aioredis==1.2.0
