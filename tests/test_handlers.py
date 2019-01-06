@@ -105,3 +105,51 @@ async def test_get_event_by_sport_and_paginate_it_when_does_not_exist(server):
     response, data = await get_json(url, server, _event)
     assert response.status == 404
     assert {} == data
+
+
+async def test_get_event_by_attr(server, event):
+    [await event(_event) for i in range(2)]
+    url = '/api/match/?name=Real+Madrid+vs+Barcelona'
+    response, data = await get_json(url, server, {})
+    assert response.status == 200
+    assert len(data) == 2
+
+
+async def test_get_event_by_attr_and_sort_it(server, event):
+    expected = [await event(_event) for i in range(2)]
+    url = '/api/match/?name=Real+Madrid+vs+Barcelona&ordering=_id'
+    response, data = await get_json(url, server, {})
+    assert response.status == 200
+    assert len(data) == 2
+    assert expected[1]['_id'] == data[0]['_id']
+    assert expected[0]['_id'] == data[1]['_id']
+
+
+async def test_get_event_by_attr_paginate_and_sort_it(server, event):
+    expected = [await event(_event) for i in range(11)]
+    url = '/api/match/?name=Real+Madrid+vs+Barcelona&ordering=_id&page=2'
+    response, data = await get_json(url, server, {})
+    assert response.status == 200
+    assert len(data) == 1
+    assert expected[0]['_id'] == data[0]['_id']
+
+
+async def test_get_event_by_attr_when_does_not_exist(server):
+    url = '/api/match/?name=Real+Madrid+vs+Barcelona'
+    response, data = await get_json(url, server, _event)
+    assert response.status == 404
+    assert {} == data
+
+
+async def test_get_event_by_attr_and_sort_it_when_does_not_exist(server):
+    url = '/api/match/?name=Real+Madrid+vs+Barcelona&ordering=_id'
+    response, data = await get_json(url, server, _event)
+    assert response.status == 404
+    assert {} == data
+
+
+async def test_get_event_by_attr_and_paginate_it_when_does_not_exist(server):
+    url = '/api/match/?name=Real+Madrid+vs+Barcelona&page=2'
+    response, data = await get_json(url, server, _event)
+    assert response.status == 404
+    assert {} == data
