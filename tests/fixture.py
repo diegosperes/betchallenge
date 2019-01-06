@@ -28,8 +28,6 @@ event = {
    ]
 }
 
-not_exist_message = {}
-
 sent_message = {
    "@uri": None,
    "event": event['id'],
