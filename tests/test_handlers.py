@@ -2,7 +2,8 @@ from bson.objectid import ObjectId
 from bson.json_util import loads
 
 from tests.fixture import (
-    scheduled_message, processed_message, event as _event
+    sent_message, scheduled_message, processed_message,
+    event as _event
 )
 
 
@@ -12,8 +13,16 @@ async def get_json(template, server, expected):
     return response, loads(await response.text())
 
 
+async def test_get_sent_message(server, message):
+    expected = await message(sent_message, 'redis')
+    response, data = await get_json('/message/{_id}', server, expected)
+    assert response.status == 200
+    assert expected['_id'] == data['_id']
+    assert expected['status'] == data['status']
+
+
 async def test_get_scheduled_message(server, message):
-    expected = await message(scheduled_message, 'redis')
+    expected = await message(scheduled_message, 'mongo')
     response, data = await get_json('/message/{_id}', server, expected)
     assert response.status == 200
     assert expected['_id'] == data['_id']
