@@ -1,5 +1,4 @@
 import aioredis
-import aio_pika
 from motor.motor_asyncio import AsyncIOMotorClient
 from sanic import Sanic
 
@@ -33,18 +32,7 @@ async def redis_setup(app, loop):
     app.redis = await aioredis.create_pool(uri, minsize=5, loop=loop)
 
 
-@app.listener('before_server_start')
-async def pika_setup(app, loop):
-    uri = app.config.rabbitmq['uri']
-    app.pika = await aio_pika.connect_robust(uri, loop=loop)
-
-
 @app.listener('before_server_stop')
 async def redis_teardown(app, loop):
     app.redis.close()
     await app.redis.wait_closed()
-
-
-@app.listener('before_server_stop')
-async def pika_teardown(app, loop):
-    await app.pika.close()

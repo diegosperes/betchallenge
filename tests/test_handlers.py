@@ -1,9 +1,9 @@
 from bson.objectid import ObjectId
-from bson.json_util import loads, dumps
+from bson.json_util import loads
 
 from tests.fixture import (
     sent_message, scheduled_message, processed_message,
-    event as _event, message as _message
+    event as _event
 )
 
 
@@ -42,18 +42,6 @@ async def test_get_message_when_does_not_exist(server):
     response, data = await get_json('/message/{_id}', server, kwargs)
     assert response.status == 404
     assert {} == await response.json()
-
-
-async def test_post_message(server, broker):
-    response = await server.post('/message/', data=dumps(_message))
-    assert response.status == 202
-
-
-async def test_post_message_and_save_it_in_redis(server, broker):
-    response = await server.post('/message/', data=dumps(_message))
-    uri = 'message_{0}'.format(response.headers['Location'].split('/')[-1])
-    message = await server.app.redis.execute('get', uri)
-    assert message is not None
 
 
 async def test_get_event_by_id(server, event):

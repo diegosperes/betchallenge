@@ -24,14 +24,6 @@ async def get_message(request, _id):
     return json(data, status=status, dumps=dumps)
 
 
-@app.route('/message/', methods=['POST'])
-async def post_message(request):
-    _message = await message.publish(request.json)
-    location = '{scheme}://{host}/message/{id}'.format(
-        scheme=request.scheme, host=request.host, id=_message['_id'])
-    return json({}, status=202, headers={'Location': location})
-
-
 @app.route('/api/match/<value>', methods=['GET'])
 async def get_event(request, value):
     return await _get_event(request, value)
