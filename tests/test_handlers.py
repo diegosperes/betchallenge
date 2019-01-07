@@ -1,9 +1,10 @@
+import pytest
 from bson.objectid import ObjectId
-from bson.json_util import loads
+from bson.json_util import loads, dumps
 
 from tests.fixture import (
     sent_message, scheduled_message, processed_message,
-    event as _event
+    event as _event, message as _message
 )
 
 
@@ -13,6 +14,7 @@ async def get_json(template, server, expected):
     return response, loads(await response.text())
 
 
+@pytest.mark.skip('Doing mvp')
 async def test_get_sent_message(server, message):
     expected = await message(sent_message, 'redis')
     response, data = await get_json('/message/{_id}', server, expected)
@@ -21,6 +23,7 @@ async def test_get_sent_message(server, message):
     assert expected['status'] == data['status']
 
 
+@pytest.mark.skip('Doing mvp')
 async def test_get_scheduled_message(server, message):
     expected = await message(scheduled_message, 'mongo')
     response, data = await get_json('/message/{_id}', server, expected)
@@ -29,6 +32,7 @@ async def test_get_scheduled_message(server, message):
     assert expected['status'] == data['status']
 
 
+@pytest.mark.skip('Doing mvp')
 async def test_get_processed_message(server, message):
     expected = await message(processed_message, 'mongo')
     response, data = await get_json('/message/{_id}', server, expected)
@@ -37,11 +41,35 @@ async def test_get_processed_message(server, message):
     assert expected['status'] == data['status']
 
 
+@pytest.mark.skip('Doing mvp')
 async def test_get_message_when_does_not_exist(server):
     kwargs = {'_id': ObjectId()}
     response, data = await get_json('/message/{_id}', server, kwargs)
     assert response.status == 404
     assert {} == await response.json()
+
+
+async def test_post_message(server):
+    response = await server.post('/message/', data=dumps(_message))
+    data = await response.json()
+    await server.app.mongo['event'].delete_one({'id': data['id']})
+    assert response.status == 201
+    assert _event['id'] == data['id']
+    assert _event['name'] == data['name']
+
+
+async def test_post_message_when_already_exist(server, event):
+    evt = await event(_event)
+    evt['name'] = 'New game'
+    new_message = _message.copy()
+    new_message['event'] = evt
+    new_message['message_type'] = 'UpdateOdds'
+    response = await server.post('/message/', data=dumps(new_message))
+    data = await response.json()
+    await server.app.mongo['event'].delete_one({'id': data['id']})
+    assert response.status == 200
+    assert _event['id'] == data['id']
+    assert data['name'] == 'New game'
 
 
 async def test_get_event_by_id(server, event):

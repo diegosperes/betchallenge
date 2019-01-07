@@ -28,6 +28,12 @@ event = {
    ]
 }
 
+message = {
+   "id": 8661032861909884224,
+   "message_type": "NewEvent",
+   "event": event
+}
+
 sent_message = {
    "@uri": None,
    "event": event['id'],

@@ -6,9 +6,21 @@ from betbright.application import app
 async def find(value, page=0, limit=10, sort=None, **query):
     if query:
         return await _get_event_by_attr(query, page, limit, sort)
-    elif value.isnumeric():
+    elif type(value) is int or value.isnumeric():
         return await _get_event_by_id(value)
     return await _get_event_by_attr({'sport.name': value}, page, limit, sort)
+
+
+async def insert(data):
+    await app.mongo['event'].insert_one(data)
+
+
+async def update(data):
+    query = {'id': data['id']}
+    document = await find(data['id'])
+    document.update(data)
+    del document['_id']
+    await app.mongo['event'].update_one(query, {'$set': document})
 
 
 async def _get_event_by_id(_id):
