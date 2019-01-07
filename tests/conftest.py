@@ -53,3 +53,20 @@ async def event(server):
     # teardown
     for _id in ids:
         await server.app.mongo['event'].delete_one({'_id': _id})
+
+
+@pytest.fixture(scope='function')
+async def broker(server):
+    queue_names = {'message'}
+    channel = await server.app.pika.channel()
+
+    # setup
+    async def get_queue(queue_name):
+        queue_names.add(queue_name)
+        return await channel.declare_queue(queue_name, passive=True)
+    yield get_queue
+
+    # teardown
+    for queue_name in queue_names:
+        await channel.queue_delete(queue_name)
+    await channel.close()

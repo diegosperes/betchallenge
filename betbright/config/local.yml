@@ -10,3 +10,6 @@ mongo:
 
 redis:
   uri: 'redis://localhost'
+
+rabbitmq:
+  uri: 'amqp://guest:guest@127.0.0.1/'
