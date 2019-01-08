@@ -5,15 +5,16 @@ from betbright.application import app
 from betbright.models import event
 
 
-async def _get_event(request, value=None):
+async def _get_event(request, query={}):
     querystring = request.raw_args.copy()
     querystring['page'] = int(request.raw_args.get('page', '0'))
     querystring['sort'] = request.raw_args.get('ordering', None)
     if 'ordering' in querystring:
         del querystring['ordering']
 
-    document = await event.find(value, **querystring)
-    data, status = (document, 200) if document else ({}, 404)
+    query.update(querystring)
+    result = await event.find(**query)
+    data, status = (result, 200) if result else ({}, 404)
     return json(data, status=status, dumps=dumps)
 
 
@@ -39,7 +40,10 @@ async def post_message(request):
 
 @app.route('/api/match/<value>', methods=['GET'])
 async def get_event(request, value):
-    return await _get_event(request, value)
+    query = {'sport.name': value}
+    if value.isnumeric():
+        query = {'id': int(value), 'unique': True}
+    return await _get_event(request, query)
 
 
 @app.route('/api/match/', methods=['GET'])
