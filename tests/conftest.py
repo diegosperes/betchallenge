@@ -3,6 +3,13 @@ from bson.objectid import ObjectId
 from bson.json_util import dumps
 
 from betbright.server import app
+from betbright.models.model import Model
+
+
+class TestModel(Model):
+    @property
+    def collection(self):
+        return app.mongo['test-model']
 
 
 @pytest.fixture(scope='function')
@@ -53,3 +60,10 @@ async def event(server):
     # teardown
     for _id in ids:
         await server.app.mongo['event'].delete_one({'_id': _id})
+
+
+@pytest.fixture(scope='function')
+async def test_model(server):
+    test_model = TestModel()
+    yield test_model
+    await test_model.collection.delete_many({})

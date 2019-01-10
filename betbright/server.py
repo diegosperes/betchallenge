@@ -34,7 +34,7 @@ async def post_message(request):
         await event.insert(_event)
     else:
         status = 200
-        await event.update(_event)
+        await event.update(_event,  {'id': _event['id']})
     return json(_event, status=status, dumps=dumps)
 
 
