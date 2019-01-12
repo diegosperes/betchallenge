@@ -1,17 +1,12 @@
 import pytest
 from bson.objectid import ObjectId
-from bson.json_util import loads, dumps
+from bson.json_util import dumps
 
+from tests.utils import get_json
 from tests.fixture import (
     sent_message, scheduled_message, processed_message,
     event as _event, message as _message
 )
-
-
-async def get_json(template, server, expected):
-    uri = template.format(**expected)
-    response = await server.get(uri)
-    return response, loads(await response.text())
 
 
 @pytest.mark.skip('Doing mvp')
