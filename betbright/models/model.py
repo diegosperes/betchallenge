@@ -23,9 +23,9 @@ class Model:
     async def insert(self, data):
         await self.collection.insert_one(data)
 
-    async def update(self, data, query):
+    async def update(self, data, query, **kwargs):
         data = data.copy()
         document = await self.find(unique=True, **query)
         document.update(data)
         del document['_id']
-        await self.collection.update_one(query, {'$set': document})
+        await self.collection.update_one(query, {'$set': document}, **kwargs)

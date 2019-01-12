@@ -1,5 +1,8 @@
 from datetime import datetime
 
+from betbright.models.message import SENT_STATUS_MESSAGE, SCHEDULED_STATUS_MESSAGE, PROCESSED_STATUS_MESSAGE
+
+
 event = {
    "id": 994839351740,
    "name": "Real Madrid vs Barcelona",
@@ -37,17 +40,17 @@ message = {
 sent_message = {
    "@uri": None,
    "event": event['id'],
-   "status": "sent",
+   "status": SENT_STATUS_MESSAGE,
    "send_at": datetime.now(),
    "scheduled_at": None,
    "processed_at": None,
 }
 
 scheduled_message = sent_message.copy()
-scheduled_message['status'] = 'scheduled'
+scheduled_message['status'] = SCHEDULED_STATUS_MESSAGE
 scheduled_message['scheduled_at'] = datetime.now()
 
 processed_message = scheduled_message.copy()
-processed_message['status'] = 'processed'
+processed_message['status'] = PROCESSED_STATUS_MESSAGE
 processed_message['processed_at'] = datetime.now()
 processed_message['@uri'] = '/api/match/{0}'.format(event['id'])
