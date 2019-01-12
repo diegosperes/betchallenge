@@ -1,8 +1,9 @@
 from sanic.response import json
 from bson.json_util import dumps
+from bson.objectid import ObjectId
 
 from betbright.application import app
-from betbright.models import event
+from betbright.models import event, message
 
 
 async def _get_event(request, query={}):
@@ -18,11 +19,11 @@ async def _get_event(request, query={}):
     return json(data, status=status, dumps=dumps)
 
 
-# @app.route('/message/<_id>', methods=['GET'])
-# async def get_message(request, _id):
-#     document = await message.find(_id)
-#     data, status = (document, 200) if document else ({}, 404)
-#     return json(data, status=status, dumps=dumps)
+@app.route('/message/<_id>', methods=['GET'])
+async def get_message(request, _id):
+    document = await message.find(_id=ObjectId(_id), unique=True)
+    data, status = (document, 200) if document else ({}, 404)
+    return json(data, status=status, dumps=dumps)
 
 
 @app.route('/message/', methods=['POST'])

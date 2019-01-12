@@ -1,4 +1,3 @@
-import pytest
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 
@@ -9,7 +8,6 @@ from tests.fixture import (
 )
 
 
-@pytest.mark.skip('Doing mvp')
 async def test_get_sent_message(server, message):
     expected = await message(sent_message, 'redis')
     response, data = await get_json('/message/{_id}', server, expected)
@@ -18,7 +16,6 @@ async def test_get_sent_message(server, message):
     assert expected['status'] == data['status']
 
 
-@pytest.mark.skip('Doing mvp')
 async def test_get_scheduled_message(server, message):
     expected = await message(scheduled_message, 'mongo')
     response, data = await get_json('/message/{_id}', server, expected)
@@ -27,7 +24,6 @@ async def test_get_scheduled_message(server, message):
     assert expected['status'] == data['status']
 
 
-@pytest.mark.skip('Doing mvp')
 async def test_get_processed_message(server, message):
     expected = await message(processed_message, 'mongo')
     response, data = await get_json('/message/{_id}', server, expected)
@@ -36,7 +32,6 @@ async def test_get_processed_message(server, message):
     assert expected['status'] == data['status']
 
 
-@pytest.mark.skip('Doing mvp')
 async def test_get_message_when_does_not_exist(server):
     kwargs = {'_id': ObjectId()}
     response, data = await get_json('/message/{_id}', server, kwargs)
