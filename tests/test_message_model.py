@@ -1,3 +1,4 @@
+from bson.json_util import loads
 from betbright.models import message as message_model
 from tests.fixture import sent_message, scheduled_message, processed_message
 
@@ -12,7 +13,7 @@ async def test_find_message_in_redis(message):
     assert result['_id'] == expected['_id']
 
 
-async def test_insert_sent_message_in_redis(server):
+async def test_insert_sent_message_in_redis(server, message):
     redis = server.app.redis
     raw_message = sent_message.copy()
     await message_model.insert(raw_message)
@@ -34,3 +35,13 @@ async def test_update_processed_message_in_mongo(message):
     expected.update(processed_message)
     await message_model.update(expected, query)
     assert await message_model.collection.find_one(query) is not None
+
+
+async def test_send_broker_message_when_insert_sent_message(server):
+    raw_message = sent_message.copy()
+    queue = await server.app.broker.get_queue('message')
+    await message_model.insert(raw_message)
+    with (await queue.get()).process() as broker_message:
+        _message = broker_message.body.decode()
+        message = loads(_message)
+        assert message['_id'] == raw_message['_id']

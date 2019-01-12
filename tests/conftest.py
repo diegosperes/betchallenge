@@ -39,6 +39,7 @@ async def message(server):
     yield factory
 
     # teardown
+    await server.app.broker.get_channel().queue_delete('message')
     for _id in ids:
         await server.app.redis.execute('del', template_key.format(_id=_id))
         await server.app.mongo['message'].delete_one({'_id': _id})

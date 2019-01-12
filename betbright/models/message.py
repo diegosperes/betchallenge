@@ -1,3 +1,4 @@
+import aio_pika
 from bson.objectid import ObjectId
 from bson.json_util import loads, dumps
 
@@ -24,8 +25,10 @@ class Message(Model):
 
     async def insert(self, data):
         data['_id'] = ObjectId()
+        _data = dumps(data)
         redis_key = _template_key.format(_id=data['_id'])
-        await app.redis.execute('set', redis_key, dumps(data))
+        await app.redis.execute('set', redis_key, _data)
+        await self._send_broker_message(_data)
 
     async def update(self, data, query, **kwargs):
         kwargs['upsert'] = True
@@ -35,3 +38,8 @@ class Message(Model):
         redis_key = _template_key.format(_id=_id)
         message = await app.redis.execute('get', redis_key)
         return loads(message.decode()) if message else message
+
+    async def _send_broker_message(self, body):
+        message = aio_pika.Message(body=body.encode())
+        channel = app.broker.get_channel()
+        await channel.default_exchange.publish(message, routing_key='message')

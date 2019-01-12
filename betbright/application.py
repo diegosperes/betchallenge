@@ -3,6 +3,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from sanic import Sanic
 
 from betbright.config import settings
+from betbright.broker import Broker
 
 
 class Application(Sanic):
@@ -32,7 +33,17 @@ async def redis_setup(app, loop):
     app.redis = await aioredis.create_pool(uri, minsize=5, loop=loop)
 
 
+@app.listener('before_server_start')
+async def broker_setup(app, loop):
+    app.broker = await Broker(loop).connect()
+
+
 @app.listener('before_server_stop')
 async def redis_teardown(app, loop):
     app.redis.close()
     await app.redis.wait_closed()
+
+
+@app.listener('before_server_stop')
+async def broker_teardown(app, loop):
+    await app.broker.disconnect()
