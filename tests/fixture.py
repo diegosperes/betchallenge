@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from betbright.models.message import SENT_STATUS_MESSAGE, SCHEDULED_STATUS_MESSAGE, PROCESSED_STATUS_MESSAGE
+from betbright.models.message import (
+   SENT_STATUS_MESSAGE, SCHEDULED_STATUS_MESSAGE, PROCESSED_STATUS_MESSAGE
+)
 
 
 event = {
