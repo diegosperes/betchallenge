@@ -63,7 +63,7 @@ class Worker:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.ERROR)
+    logging.basicConfig(level=logging.INFO)
     loop = asyncio.get_event_loop()
     worker = Worker(loop)
     loop.create_task(worker.run(loop))
