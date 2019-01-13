@@ -1,0 +1,15 @@
+app:
+  host: '0.0.0.0'
+  port: 8000
+  debug: false
+  workers: 3
+
+mongo:
+  uri: 'mongodb://mongodb:27017/'
+  database: 'betbright'
+
+redis:
+  uri: 'redis://redis:6379'
+
+broker:
+  uri: 'amqp://guest:guest@broker/'
