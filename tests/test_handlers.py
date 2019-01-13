@@ -76,6 +76,11 @@ async def test_post_message_when_already_exist(server, event):
     assert data['event']['name'] == 'New game'
 
 
+async def test_post_set_location_header(server):
+    response = await server.post('/message/', data=dumps(_message))
+    assert response.headers['Location'].startswith('/message/')
+
+
 async def test_get_event_by_id(server, event):
     expected = await event(_event)
     response, data = await get_json('/api/match/{id}', server, expected)

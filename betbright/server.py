@@ -33,7 +33,12 @@ async def get_message(request, _id):
 @app.route('/message/', methods=['POST'])
 async def post_message(request):
     data = await message.insert(request.json)
-    return json(data, status=202, dumps=dumps)
+    return json(
+        data,
+        status=202,
+        headers={'Location': '/message/{_id}'.format(**data)},
+        dumps=dumps
+    )
 
 
 @app.route('/api/match/<value>', methods=['GET'])
