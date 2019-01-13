@@ -3,12 +3,11 @@ import logging
 from bson.json_util import loads
 from aio_pika.exceptions import QueueEmpty
 
-from betbright.application import app, setup, teardown
+from betbright.application import app, setup
 from betbright.models import message, event
 from betbright.models.message import (
     generate_message, SCHEDULED_STATUS_MESSAGE, PROCESSED_STATUS_MESSAGE
 )
-from betbright.broker import Broker
 
 
 class Worker:
