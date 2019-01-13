@@ -3,7 +3,7 @@ import logging
 from bson.json_util import loads
 from aio_pika.exceptions import QueueEmpty
 
-from betbright.server import app
+from betbright.application import app, setup, teardown
 from betbright.models import message, event
 from betbright.models.message import (
     generate_message, SCHEDULED_STATUS_MESSAGE, PROCESSED_STATUS_MESSAGE
@@ -16,8 +16,8 @@ class Worker:
         self.loop = loop
 
     async def setup(self):
-        self.broker = await Broker(self.loop).connect()
-        app.broker = self.broker
+        await setup(app, self.loop)
+        self.broker = app.broker
 
     async def run(self, loop):
         await self.setup()

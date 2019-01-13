@@ -15,35 +15,43 @@ class Application(Sanic):
 app = Application()
 
 
-@app.listener('before_server_start')
 def settings_update(app, loop):
     app.config.update(settings)
 
 
-@app.listener('before_server_start')
 def mongodb_setup(app, loop):
     uri = app.config.mongo['uri']
     database = app.config.mongo['database']
     app.mongo = AsyncIOMotorClient(uri, io_loop=loop)[database]
 
 
-@app.listener('before_server_start')
 async def redis_setup(app, loop):
     uri = app.config.redis['uri']
     app.redis = await aioredis.create_pool(uri, minsize=5, loop=loop)
 
 
-@app.listener('before_server_start')
 async def broker_setup(app, loop):
     app.broker = await Broker(loop).connect()
 
 
-@app.listener('before_server_stop')
 async def redis_teardown(app, loop):
     app.redis.close()
     await app.redis.wait_closed()
 
 
-@app.listener('before_server_stop')
 async def broker_teardown(app, loop):
     await app.broker.disconnect()
+
+
+@app.listener('before_server_start')
+async def setup(app, loop):
+    settings_update(app, loop)
+    mongodb_setup(app, loop)
+    await redis_setup(app, loop)
+    await broker_setup(app, loop)
+
+
+@app.listener('before_server_stop')
+async def teardown(app, loop):
+    await redis_teardown(app, loop)
+    await broker_teardown(app, loop)
