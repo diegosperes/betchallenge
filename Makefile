@@ -6,7 +6,7 @@ ifeq ($(ENV), prod)
 endif
 
 run-prod: build
-	@docker-compose up
+	@docker-compose up --scale worker=3
 
 run-server:
 	@#https://github.com/huge-success/sanic/issues/1248

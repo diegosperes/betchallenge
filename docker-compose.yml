@@ -21,7 +21,7 @@ services:
       - "5672:5672"
       - "5673:5673"
 
-  app:
+  web:
     image: betbright
     environment:
       - ENV=prod
@@ -38,6 +38,18 @@ services:
     environment:
       WAIT_HOSTS: mongodb:27017, broker:5671, broker:5672, broker:5673, redis:6379
 
+  worker:
+    image: betbright
+    environment:
+      - ENV=prod
+    links:
+      - mongodb
+      - broker
+      - redis
+    depends_on:
+      - web
+    command: ["make", "run-worker"]
+
   nginx:
     image: nginx:alpine
     volumes:
@@ -45,6 +57,6 @@ services:
     ports:
       - "8080:8080"
     links:
-      - app
+      - web
     depends_on:
-      - app
+      - web

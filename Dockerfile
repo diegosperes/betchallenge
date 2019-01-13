@@ -15,5 +15,4 @@ COPY ./betbright /app/betbright/
 
 EXPOSE 8000
 
-CMD ["make", "run-worker"]
 CMD ["make", "run-server"]
