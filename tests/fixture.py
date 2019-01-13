@@ -1,4 +1,5 @@
 from datetime import datetime
+from bson.objectid import ObjectId
 
 from betbright.models.message import (
    SENT_STATUS_MESSAGE, SCHEDULED_STATUS_MESSAGE, PROCESSED_STATUS_MESSAGE
@@ -40,10 +41,11 @@ message = {
 }
 
 sent_message = {
+   "_id": ObjectId(),
    "@uri": None,
-   "event": event['id'],
+   "event": event,
    "status": SENT_STATUS_MESSAGE,
-   "send_at": datetime.now(),
+   "sent_at": datetime.now(),
    "scheduled_at": None,
    "processed_at": None,
 }

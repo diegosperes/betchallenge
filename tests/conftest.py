@@ -4,6 +4,7 @@ from bson.json_util import dumps
 
 from betbright.server import app
 from betbright.models.model import Model
+from betbright.worker import Worker
 
 
 class TestModel(Model):
@@ -68,3 +69,11 @@ async def test_model(server):
     test_model = TestModel()
     yield test_model
     await test_model.collection.delete_many({})
+
+
+@pytest.fixture(scope='function')
+async def worker(loop):
+    worker = Worker(loop)
+    await worker.setup()
+    yield worker
+    await worker.broker.get_channel().queue_delete('message')
