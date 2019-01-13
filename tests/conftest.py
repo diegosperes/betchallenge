@@ -72,8 +72,11 @@ async def test_model(server):
 
 
 @pytest.fixture(scope='function')
-async def worker(loop):
-    worker = Worker(loop)
+async def worker(server):
+    app = server.app
+    worker = Worker(app.loop)
     await worker.setup()
     yield worker
     await worker.broker.get_channel().queue_delete('message')
+    await app.mongo.client.drop_database(app.config.mongo['database'])
+    await app.redis.execute('flushdb')

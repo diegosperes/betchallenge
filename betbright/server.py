@@ -28,15 +28,8 @@ async def get_message(request, _id):
 
 @app.route('/message/', methods=['POST'])
 async def post_message(request):
-    data = request.json
-    _event = data['event']
-    if data['message_type'] == 'NewEvent':
-        status = 201
-        await event.insert(_event)
-    else:
-        status = 200
-        await event.update(_event,  {'id': _event['id']})
-    return json(_event, status=status, dumps=dumps)
+    data = await message.insert(request.json)
+    return json(data, status=202, dumps=dumps)
 
 
 @app.route('/api/match/<value>', methods=['GET'])

@@ -42,10 +42,14 @@ async def test_get_message_when_does_not_exist(server):
 async def test_post_message(server):
     response = await server.post('/message/', data=dumps(_message))
     data = await response.json()
-    await server.app.mongo['event'].delete_one({'id': data['id']})
-    assert response.status == 201
-    assert _event['id'] == data['id']
-    assert _event['name'] == data['name']
+    await server.app.mongo['event'].count_documents({}) == 0
+    await server.app.mongo['message'].count_documents({}) == 0
+
+    assert response.status == 202
+    assert data['@uri'] is None
+    assert data['status'] == 'sent'
+    assert data['event'] == _event
+    assert data['_id'] is not None
 
 
 async def test_post_message_when_already_exist(server, event):
@@ -56,10 +60,13 @@ async def test_post_message_when_already_exist(server, event):
     new_message['message_type'] = 'UpdateOdds'
     response = await server.post('/message/', data=dumps(new_message))
     data = await response.json()
-    await server.app.mongo['event'].delete_one({'id': data['id']})
-    assert response.status == 200
-    assert _event['id'] == data['id']
-    assert data['name'] == 'New game'
+    await server.app.mongo['event'].delete_one({'id': data['event']['id']})
+
+    assert response.status == 202
+    assert data['@uri'] is None
+    assert data['status'] == 'sent'
+    assert data['_id'] is not None
+    assert data['event']['name'] == 'New game'
 
 
 async def test_get_event_by_id(server, event):
