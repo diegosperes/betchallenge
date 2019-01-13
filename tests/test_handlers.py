@@ -39,6 +39,13 @@ async def test_get_message_when_does_not_exist(server):
     assert {} == await response.json()
 
 
+async def test_get_message_whith_wrong_id(server):
+    kwargs = {'_id': '123'}
+    response, data = await get_json('/message/{_id}', server, kwargs)
+    assert response.status == 404
+    assert {} == await response.json()
+
+
 async def test_post_message(server):
     response = await server.post('/message/', data=dumps(_message))
     data = await response.json()
