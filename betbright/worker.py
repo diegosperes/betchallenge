@@ -30,7 +30,7 @@ class Worker:
         query = {"id": data['event']['id']}
         document = await event.find(unique=True, **query)
         if document:
-            await event.update(data, query)
+            await event.update(data['event'], query)
         else:
             await event.insert(data['event'])
         await self._update_message_status(data, PROCESSED_STATUS_MESSAGE)
