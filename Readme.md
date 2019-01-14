@@ -2,7 +2,6 @@
 
 TLDR; The solution is a mix of messaging architecture and a restful application.
 
-
 ## Thoughts
 
 I was wondering what would be the best solution to solve this problem at the same time to scale up the application without overhead a database, due to it, a good solution would be a mix of nginx, sanic, rabbitmq, workers, MongoDB, Redis, and docker. I know is a bunch of technologies but don't be scared, is easy like a piece of cake.
@@ -16,9 +15,9 @@ I was wondering what would be the best solution to solve this problem at the sam
 - Worker process any message and save it in MongoDB
 - MongoDB is the database responsible to keep all the data.
 
-
 ## Production
 
+You must add 'external-host' and 'security-host' to your /etc/hosts, Nginx will use these domains.
 To simulate the production environment, you just need to run the following command ``` make run-prod ```
 
 #### Insert new message
@@ -46,9 +45,9 @@ Every message post will return a Location header with a path to figure out the m
 ## Tests
 
 To test the application on your computer, you need to set up your environment installing all the services:
-    - RabbitMq
-    - Redis
-    - MongoDB
+- RabbitMq
+- Redis
+- MongoDB
 
 After that, you just need to run ``` make tests ```
 
@@ -56,7 +55,7 @@ After that, you just need to run ``` make tests ```
 
 - Validate a message content pattern.
 - Integrate with a CI/CD
-- Benchmark to measure how many works should I use.
+- Benchmark to measure how many workers should I use.
 - Refactor application, the integration with the worker.
 - Refactor models
 - Some bugs
