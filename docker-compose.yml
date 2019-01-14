@@ -4,18 +4,24 @@ services:
   mongodb:
     image: mongo
     hostname: mongodb
+    logging:
+      driver: none
     ports:
       - "27017:27017"
 
   redis:
     image: redis
     hostname: redis
+    logging:
+      driver: none
     ports:
       - "6379:6379"
 
   broker:
     image: rabbitmq
     hostname: broker
+    logging:
+      driver: none
     ports:
       - "5671:5671"
       - "5672:5672"
